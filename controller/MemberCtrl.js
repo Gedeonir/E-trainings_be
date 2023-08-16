@@ -306,7 +306,11 @@ const enrollToCourse=asyncHandler(async(req,res)=>{
         totalLessonsCompleted:0
       })
 
+      findCourse.enrolledMembers.push(member._id);
+
+      
       await member.save();
+      await findCourse.save();
 
       res.json({
         message:"You are succesfully enrolled to this course"

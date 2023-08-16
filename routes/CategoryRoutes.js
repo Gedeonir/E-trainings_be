@@ -6,8 +6,8 @@ const { createCategory, getAllCategories, getOneCategory, updateCategory } = req
 const router = express.Router();
 
 router.post("/addCategory",authMiddleware,isAdmin,createCategory);
-router.get("/allCategories",getAllCategories);
-router.get("/:id",getOneCategory);
+router.get("/allCategories",authMiddleware,getAllCategories);
+router.get("/:id",authMiddleware,getOneCategory);
 router.put("/:id",authMiddleware,isAdmin,updateCategory);
 router.delete("/:id",authMiddleware,isAdmin);
 

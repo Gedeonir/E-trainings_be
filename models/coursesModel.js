@@ -13,7 +13,6 @@ var courseSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    lessons: [{type: mongoose.Schema.Types.ObjectId, ref: "Lessons"}, { _id : false }],
     enrolledMembers: [{type: mongoose.Schema.Types.ObjectId, ref: "Members"}, { _id : false }],
     ratingsAndReviews: [
       {

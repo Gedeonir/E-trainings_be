@@ -12,6 +12,7 @@ var adminSchema = new mongoose.Schema(
     email: {
       type: String,
       required: true,
+      unique:true
     },
     mobile: {
       type: String,
@@ -53,7 +54,7 @@ adminSchema.methods.isPasswordMatched = async function (enteredPassword) {
 adminSchema.methods.createPasswordResetToken = async function () {
   this.passwordResetCode = Math.floor(Math
     .random() * (99999 - 10000 + 1)) + 10000;
-    
+
   this.passwordResetExpires = Date.now() + 30 * 60 * 1000; // 10 minutes
   return resettoken;
 };

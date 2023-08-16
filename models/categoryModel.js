@@ -8,6 +8,7 @@ var categorySchema = new mongoose.Schema(
     cetegoryName: {
       type: String,
       required: true,
+      unique:true
     },
     description: {
       type: String,

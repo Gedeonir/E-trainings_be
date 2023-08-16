@@ -5,6 +5,9 @@ const crypto = require("crypto");
 
 var lessonSchema = new mongoose.Schema(
   {
+    Course:{
+      type: mongoose.Schema.Types.ObjectId, ref: "Courses"
+    },
     lessonTitle: {
       type: String,
       required: true,
@@ -17,6 +20,7 @@ var lessonSchema = new mongoose.Schema(
         type: String,
         required: true,
     },
+
   },
   {
     timestamps: true,

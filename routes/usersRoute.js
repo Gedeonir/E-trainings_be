@@ -28,11 +28,11 @@ const adminRoutes=express.Router();
 
 memberRoutes.post("/register", createMember);
 memberRoutes.post("/login", loginMemberCtrl);
-memberRoutes.get("/all-members", getAllMembers);
+memberRoutes.get("/all-members", authMiddleware,getAllMembers);
 memberRoutes.patch("/forgot-password", forgotPassword);
 memberRoutes.patch("/reset-password/:OTPCode", resetPassword);
 memberRoutes.patch("/password", authMiddleware, changePassword);
-memberRoutes.get("/:id",getOneMember);
+memberRoutes.get("/:id",authMiddleware,getOneMember);
 memberRoutes.delete("/:id",authMiddleware,isAdmin,deleteMember)
 memberRoutes.patch("/:id",authMiddleware,updatedMember)
 memberRoutes.patch("/block-Member/:id", authMiddleware, isAdmin, disableMember);

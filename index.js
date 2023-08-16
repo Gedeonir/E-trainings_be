@@ -7,6 +7,9 @@ const dotenv = require("dotenv").config();
 const PORT = process.env. PORT || 5000;
 const {memberRoutes,adminRoutes} = require("./routes/usersRoute");
 const categoryRoutes=require("./routes/CategoryRoutes")
+const tutorsRoutes=require("./routes/TutorRoutes")
+const lessonRoutes=require("./routes/LessonRoutes")
+
 const morgan = require("morgan");
 const cors = require("cors");
 
@@ -18,6 +21,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use("/api/member", memberRoutes);
 app.use("/api/admin",adminRoutes);
 app.use("/api/category",categoryRoutes);
+app.use("/api/tutor",tutorsRoutes);
+app.use("api/course",lessonRoutes);
 
 
 app.use(notFound);
