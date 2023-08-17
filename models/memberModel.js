@@ -59,6 +59,7 @@ var memberSchema = new mongoose.Schema(
     passwordChangedAt: Date,
     passwordResetCode: Number,
     passwordResetExpires: Date,
+    verifyContactCode:Number
   },
   {
     timestamps: true,
@@ -76,13 +77,21 @@ memberSchema.pre("save", async function (next) {
 memberSchema.methods.isPasswordMatched = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
+
 memberSchema.methods.createPasswordResetToken = async function () {
-  this.passwordResetCode = Math.floor(Math
-    .random() * (99999 - 10000 + 1)) + 10000;
+  this.passwordResetCode = Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000;
 
   this.passwordResetExpires = Date.now() + 30 * 60 * 1000; // 10 minutes
-  return resettoken;
+  return this.passwordResetCode;
 };
+
+memberSchema.methods.createVerificationCode=async function(){
+  this.verifyContactCode=Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000;
+
+  return this.verifyContactCode;
+}
+
+
 
 //Export the model
 module.exports = mongoose.model("Members", memberSchema);

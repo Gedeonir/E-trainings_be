@@ -9,7 +9,6 @@ const validateMongoDbId = require("../utils/validateMongodbId");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const sendSMS=require("../utils/sendSms");
-const { memberRoutes } = require("../routes/usersRoute");
 
 
 const getMemberCategory=(yearOfMarriage)=>{
@@ -27,48 +26,56 @@ const getMemberCategory=(yearOfMarriage)=>{
 
 const createMember = asyncHandler(async (req, res) => {
   const {isMarried,yearOfMarriage,fullNames,age,mobile,password,district,church} = req.body
+  
+  if(!fullNames||!age||!mobile||!password || !district || !church) throw new Error("All fields are required");
+  
+  if(isMarried && !yearOfMarriage) throw new Error("Please specify year of Marriage");
 
-  try{
+  if(yearOfMarriage > new Date().getFullYear()) throw new Error("The year of marriage must not exceeds today's date")
 
-    if(!fullNames||!age||!mobile||!password || !district || !church ||!isMarried) throw new Error("All fields are required");
+  /**
+   * TODO:With the help of mobile find the Member exists or not
+   */
+  const findMember = await Member.findOne({ mobile: mobile });
 
-    if(isMarried && !yearOfMarriage) throw new Error("Please specify year of Marriage");
-
+  if (!findMember) {
     /**
-     * TODO:With the help of email find the Member exists or not
+     * TODO:if Member not found Member create a new Member
      */
-    const findMember = await Member.findOne({ mobile: mobile });
+    const newMember = await Member.create(
+      {
+        fullNames:fullNames,
+        age:age,
+        mobile:mobile,
+        isMarried:isMarried,
+        yearOfMarriage:yearOfMarriage,
+        password:password,
+        memberCategory:isMarried?getMemberCategory(yearOfMarriage):"Junior",
+        district:district,
+        church: church,
+      }
+    );
 
-    if (!findMember) {
-      /**
-       * TODO:if Member not found Member create a new Member
-       */
-      const newMember = await Member.create(
-        {
-          fullNames:fullNames,
-          age:age,
-          mobile:mobile,
-          isMarried:isMarried,
-          yearOfMarriage:yearOfMarriage,
-          password:password,
-          memberCategory:isMarried?getMemberCategory(yearOfMarriage):"Junior",
-          district:district,
-          church: church,
-        },
-      );
-      res.json({
-        message:"Member registered",
-        newMember
-      });
-    } else {
-      /**
-       * TODO:if Member found then thow an error: Member already exists
-       */
-      throw new Error("Member Already Exists");
-    }
-  }catch(error){
-    throw new Error("Unable to register member",error)
+
+    // const data	=	{
+    //   'recipients':`${newMember.mobile}`,
+    //   'message':`Welcome to our project`,
+    //   'sender':'+250780689938'
+    // }
+    
+    // sendSMS(data);
+
+    res.json({
+      message:"Member registered",
+      newMember
+    });
+  } else {
+    /**
+     * TODO:if Member found then thow an error: Member already exists
+     */
+    throw new Error("Member phone number Already Exists");
   }
+
 });
 
 // Login a Member
@@ -77,7 +84,7 @@ const loginMemberCtrl = asyncHandler(async (req, res) => {
 
   if(!mobile || !password) throw new Error("All fields are required")
   // check if Member exists or not
-  const findMember = await Member.findOne({ mobile });
+  const findMember = await Member.findOne({ mobile:mobile });
   if (findMember && (await findMember.isPasswordMatched(password))) {
 
     if(findMember.isDisabled) throw new Error("You are account is temporary disabled,Contact your site admin")
@@ -89,13 +96,13 @@ const loginMemberCtrl = asyncHandler(async (req, res) => {
       token: generateToken(findMember?._id),
     });
   } else {
-    throw new Error("Invalid Credentials");
+    throw new Error("Mobile or password don't match");
   }
 });
 
 const getAllMembers = asyncHandler(async (req, res) => {
   try {
-    const getMembers = await Member.find({password:0,passwordResetToken:0,passwordResetExpires:0});
+    const getMembers = await Member.find({},{password:0,passwordResetToken:0,passwordResetExpires:0});
     res.json(getMembers);
   } catch (error) {
     throw new Error(error);
@@ -133,6 +140,24 @@ const deleteMember = asyncHandler(async (req, res) => {
     throw new Error(error);
   }
 });
+
+const viewProfile=asyncHandler(async(req,res)=>{
+  const { _id } = req.user;
+  validateMongoDbId(_id);
+
+  try{
+    const getProfile = await Member.findById(_id,{password:0,passwordResetToken:0,passwordResetExpires:0})
+      .populate({path:"enrolledCourses",populate:"course"})
+      .populate({path:"enrolledCourses",populate:"totalLessonsCompleted"});
+
+    res.json({
+      getProfile,
+    });
+  } catch (error) {
+    throw new Error(error);
+  }
+
+})
 
 const updatedMember = asyncHandler(async (req, res) => {
   const { _id } = req.user;
@@ -224,7 +249,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
       Kode yo guhindura ijambo banga ryawe ni \n \n ${OTPCode}.
 
       Niba utasabye guhindura ijambo banga ryawe,irengangize iyi message.`,	
-      'sender':'7000'
+      'sender':'+250780689938'
     }
     
     sendSMS(data);
@@ -339,5 +364,6 @@ module.exports = {
   deleteMember,
   disableMember,
   unblockMember,
-  enrollToCourse
+  enrollToCourse,
+  viewProfile
 };

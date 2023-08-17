@@ -11,7 +11,8 @@ const {
   deleteMember,
   disableMember,
   unblockMember,
-  enrollToCourse
+  enrollToCourse,
+  viewProfile
 } = require("../controller/MemberCtrl");
 
 const {
@@ -28,16 +29,17 @@ const adminRoutes=express.Router();
 
 memberRoutes.post("/register", createMember);
 memberRoutes.post("/login", loginMemberCtrl);
-memberRoutes.get("/all-members", authMiddleware,getAllMembers);
+memberRoutes.get("/all-members", getAllMembers);
 memberRoutes.patch("/forgot-password", forgotPassword);
 memberRoutes.patch("/reset-password/:OTPCode", resetPassword);
 memberRoutes.patch("/password", authMiddleware, changePassword);
 memberRoutes.get("/:id",authMiddleware,getOneMember);
-memberRoutes.delete("/:id",authMiddleware,isAdmin,deleteMember)
+memberRoutes.delete("/:id",deleteMember)
 memberRoutes.patch("/:id",authMiddleware,updatedMember)
-memberRoutes.patch("/block-Member/:id", authMiddleware, isAdmin, disableMember);
-memberRoutes.patch("/unblock-Member/:id", authMiddleware, isAdmin, unblockMember);
+memberRoutes.patch("/block-member/:id", authMiddleware, isAdmin, disableMember);
+memberRoutes.patch("/unblock-member/:id", authMiddleware, isAdmin, unblockMember);
 memberRoutes.patch("/enroll/:course", authMiddleware, enrollToCourse);
+memberRoutes.get("/my/profile",authMiddleware,viewProfile)
 
 
 adminRoutes.post("/login", loginAdmin);
