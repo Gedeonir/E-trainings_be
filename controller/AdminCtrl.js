@@ -1,6 +1,7 @@
 const Admin=require("../models/adminModel");
 const asyncHandler = require("express-async-handler");
 const { generateToken } = require("../config/jwtToken");
+const validateMongoDbId = require("../utils/validateMongodbId");
 
 // admin login
 
@@ -20,9 +21,25 @@ const loginAdmin = asyncHandler(async (req, res) => {
         token: generateToken(findAdmin?._id),
       });
     } else {
-      throw new Error("Invalid Credentials");
+      throw new Error("Email or password don't match");
     }
 });
+
+const viewAdminProfile=asyncHandler(async(req,res)=>{
+  const { _id } = req.user;
+  validateMongoDbId(_id);
+
+  try{
+    const getProfile = await Admin.findById(_id,{password:0,passwordResetToken:0,passwordResetExpires:0})
+
+    res.json({
+      getProfile,
+    });
+  } catch (error) {
+    throw new Error(error);
+  }
+
+})
 
 const updatedProfile = asyncHandler(async (req, res) => {
   const { _id } = req.user;
@@ -141,5 +158,6 @@ loginAdmin,
 updatedProfile,
 forgotPasswordAdmin,
 changePasswordAdmin,
-resetPasswordAdmin
+resetPasswordAdmin,
+viewAdminProfile
 };

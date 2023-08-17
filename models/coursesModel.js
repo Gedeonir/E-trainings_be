@@ -13,6 +13,21 @@ var courseSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    courseIconImage: {
+      type: String,
+    },
+
+    courseTutors: [
+      {
+      type: mongoose.Schema.Types.ObjectId, ref: "Tutors",
+      required:true
+      },
+      { _id : false }
+    ],   
+    courseCategory: {
+        type: mongoose.Schema.Types.ObjectId, ref: "CourseCategory",
+        required:true
+    },
     enrolledMembers: [{type: mongoose.Schema.Types.ObjectId, ref: "Members"}, { _id : false }],
     ratingsAndReviews: [
       {
@@ -26,22 +41,6 @@ var courseSchema = new mongoose.Schema(
       },
       { _id : false }
     ],
-    courseIcon: {
-      type: String,
-      required: true,
-    },
-
-    courseTutor: [
-      {
-      type: mongoose.Schema.Types.ObjectId, ref: "Tutors",
-      required:true
-      },
-      { _id : false }
-    ],   
-    courseCategory: {
-        type: mongoose.Schema.Types.ObjectId, ref: "CourseCategory",
-        required:true
-    },
   },
   {
     timestamps: true,

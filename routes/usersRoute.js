@@ -20,10 +20,11 @@ const {
   updatedProfile,
   forgotPasswordAdmin,
   changePasswordAdmin,
-  resetPasswordAdmin
+  resetPasswordAdmin,
+  viewAdminProfile
 } = require("../controller/AdminCtrl");
 
-const { authMiddleware, isAdmin } = require("../middlewares/authMiddleware");
+const { authMiddleware, isAdmin, authMiddlewareAdmin } = require("../middlewares/authMiddleware");
 const memberRoutes = express.Router();
 const adminRoutes=express.Router();
 
@@ -45,7 +46,8 @@ memberRoutes.get("/my/profile",authMiddleware,viewProfile)
 adminRoutes.post("/login", loginAdmin);
 adminRoutes.patch("/forgot-password", forgotPasswordAdmin);
 adminRoutes.patch("/reset-password/:OTPCode", resetPasswordAdmin);
-adminRoutes.patch("/password", authMiddleware, changePasswordAdmin);
-adminRoutes.patch("/:id", authMiddleware, updatedProfile);
+adminRoutes.patch("/password", authMiddlewareAdmin, changePasswordAdmin);
+adminRoutes.patch("/:id", authMiddlewareAdmin, updatedProfile);
+adminRoutes.get("/my/profile",authMiddlewareAdmin,viewAdminProfile)
 
 module.exports = {memberRoutes,adminRoutes};

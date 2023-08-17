@@ -10,11 +10,11 @@ const addNewTutor=asyncHandler(async(req,res)=>{
         mobile
     }=req.body
 
-    try {
-        if(!fullNames || !mobile ||!email) throw new Error("All fields are required");
+    
+    if(!fullNames || !mobile ||!email) throw new Error("All fields are required");
 
-        if(await Tutors.findOne({email})) throw new Error("Tutor already exists")
-
+    if(await Tutors.findOne({email:email})) throw new Error("Tutor already exists")
+    else{
         const newTutor= await Tutors.create({
             fullNames,
             email,
@@ -24,10 +24,9 @@ const addNewTutor=asyncHandler(async(req,res)=>{
         res.json({
             message:`New tutor "${newTutor.fullNames}" is added sucessfully`,
         })
-
-    } catch (error) {
-        throw new Error(error)
     }
+
+    
 })
 
 const getAllTutors=asyncHandler(async(req,res)=>{

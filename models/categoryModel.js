@@ -5,10 +5,9 @@ const crypto = require("crypto");
 
 var categorySchema = new mongoose.Schema(
   {
-    cetegoryName: {
+    categoryName: {
       type: String,
       required: true,
-      unique:true
     },
     description: {
       type: String,
@@ -22,4 +21,4 @@ var categorySchema = new mongoose.Schema(
 
 
 //Export the model
-module.exports = mongoose.model("CourseCategory", categorySchema);
+module.exports = mongoose.model("CourseCategories", categorySchema);

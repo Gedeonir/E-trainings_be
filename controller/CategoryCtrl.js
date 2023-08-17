@@ -6,26 +6,24 @@ const validateMongoDbId = require("../utils/validateMongodbId");
 const createCategory=asyncHandler(async(req,res)=>{
     const{
         categoryName,
-        descrption
+        description
     }=req.body
 
-    try {
-        if(!categoryName || !descrption) throw new Error("All fields are required");
 
-        if(await Category.findOne({categoryName})) throw new Error("Category exists")
+    if(!categoryName || !description) throw new Error("All fields are required");
 
+    if(await Category.findOne({categoryName})) throw new Error("Category exists")
+    else{
         const newCategory = await Category.create({
             categoryName,
-            descrption
+            description
         });
 
         res.json({
             message:`new Category "${newCategory.categoryName}" is created sucessfully`,
         })
-
-    } catch (error) {
-        throw new Error(error)
     }
+
 })
 
 const getAllCategories=asyncHandler(async(req,res)=>{

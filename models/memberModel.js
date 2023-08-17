@@ -16,7 +16,6 @@ var memberSchema = new mongoose.Schema(
     mobile: {
       type: String,
       required: true,
-      unique: true,
     },
     isMarried:{
       type:Boolean,
