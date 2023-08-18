@@ -26,8 +26,12 @@ const getMemberCategory=(yearOfMarriage)=>{
 
 const createMember = asyncHandler(async (req, res) => {
   const {isMarried,yearOfMarriage,fullNames,age,mobile,password,district,church} = req.body
+
+  const reg = new RegExp("^((072|078|073))[0-9]{7}$", "i");
   
   if(!fullNames||!age||!mobile||!password || !district || !church) throw new Error("All fields are required");
+
+  if (!reg.test(mobile)) throw new Error("Invalid phone number, it has to start with one of 078/072/073 and it must be ten digits")
   
   if(isMarried && !yearOfMarriage) throw new Error("Please specify year of Marriage");
 

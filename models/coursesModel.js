@@ -17,15 +17,13 @@ var courseSchema = new mongoose.Schema(
       type: String,
     },
 
-    courseTutors: [
-      {
+    courseTutors:{
       type: mongoose.Schema.Types.ObjectId, ref: "Tutors",
       required:true
-      },
-      { _id : false }
-    ],   
+    },
+
     courseCategory: {
-        type: mongoose.Schema.Types.ObjectId, ref: "CourseCategory",
+        type: mongoose.Schema.Types.ObjectId, ref: "CourseCategories",
         required:true
     },
     enrolledMembers: [{type: mongoose.Schema.Types.ObjectId, ref: "Members"}, { _id : false }],

@@ -16,7 +16,11 @@ const addNewCourse=asyncHandler(async(req,res)=>{
 
     validateMongoDbId(courseCategory);
 
-    if(!courseCategory || !courseTitle || !overview ||!courseIconImage ||!courseTutors) throw new Error("All fields are required")
+    validateMongoDbId(courseTutors)
+
+
+    if(!courseCategory || !courseTitle || !overview ||!courseTutors) throw new Error("All title,category,oveview and lecture are required")
+    if(!await Tutor.findOne({_id:courseTutors})) throw new Error("Lecture don't exists")
 
     const findCategory=await Category.findOne({_id:courseCategory});
     if(!findCategory) throw new Error("Category don't exists")
@@ -44,45 +48,52 @@ const addNewCourse=asyncHandler(async(req,res)=>{
 })
 
 
-const checkTutors=async(req,res,next)=>{
-    const {courseTutors}=req.body
 
 
-    const Filter = async (courseTutors, predicate) => {
-        const results = await Promise.all(courseTutors.map(predicate));
-        return courseTutors.filter((_v, index) => results[index]);
-    }
-
-    //Check if all Tutors Exists
-    const tutorNotExist=await Filter(courseTutors, async (tutor) => {
-
-        validateMongoDbId(tutor);
-        return !await Tutor.findOne({_id:tutor});
-    }); 
-
-
-    if(tutorNotExist.length>0)   res.json({
-        message:"Tutor no longer exists",
-        tutorNotExist
-    });
-    
-    next();
-
-}
 
 const getAllCourses = asyncHandler(async (req, res) => {
     try {
-      const getCourses = await Courses.find().populate({path:"enrolledMembers"});
+      const getCourses = await Courses.find().populate("courseCategory").populate("courseTutors");
       res.json(getCourses);
     } catch (error) {
       throw new Error(error);
     }
 });
 
+const getOneCourse=asyncHandler(async(req,res)=>{
+    const {id}=req.params;
+    validateMongoDbId(id);
+
+    
+    try {
+        const getCourse= await Courses.findOne({_id:id}).populate("courseCategory").populate("courseTutors")
+        res.json({
+            getCourse
+        })
+    } catch (error) {
+        throw new Error(error)
+    }
+})
+
+const deleteLesson=asyncHandler(async(req,res)=>{
+    const {id}=req.params;
+    validateMongoDbId(id);
+
+    try {
+        await Lesson.findByIdAndDelete(id)
+        res.json({
+            message:"Lesson deleted succesfully"
+        })
+    } catch (error) {
+        throw new Error(error)
+    }
+})
+
 
 
 module.exports={
     getAllCourses,
     addNewCourse,
-    checkTutors
+    getOneCourse
+    
 }
