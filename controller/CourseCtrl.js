@@ -67,6 +67,7 @@ const getOneCourse=asyncHandler(async(req,res)=>{
     
     try {
         const getCourse= await Courses.findOne({_id:id}).populate("courseCategory").populate("courseTutors")
+        .populate({path:"enrolledMembers",populate:"member"})
         res.json({
             getCourse
         })

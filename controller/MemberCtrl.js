@@ -2,6 +2,7 @@ const Member = require("../models/memberModel");
 const Courses = require("../models/coursesModel")
 const uniqid = require("uniqid");
 const bcrypt = require("bcrypt");
+const { ObjectId } = require('bson');
 
 const asyncHandler = require("express-async-handler");
 const { generateToken } = require("../config/jwtToken");
@@ -322,34 +323,52 @@ const enrollToCourse=asyncHandler(async(req,res)=>{
 
   const {course} = req.params;
   validateMongoDbId(course);
+  const findCourse= await Courses.findOne({_id:course});
+
+  if (!findCourse) throw new Error("This course is no longer available"); 
 
   try {
-    const findCourse= await Courses.finOne({_id:course});
+    const data =findCourse?.enrolledMembers
+        
+    const filteredData = data?.filter(item => item?.member?.equals(_id));
 
-    if (findCourse) {
-      
-      const member= await Member.findOne({_id});
-
-      member.enrolledCourses.push({
-        course:findCourse?._id,
-        totalLessonsCompleted:0
-      })
-
-      findCourse.enrolledMembers.push(member._id);
-
-      
-      await member.save();
-      await findCourse.save();
-
-      res.json({
-        message:"You are succesfully enrolled to this course"
-      })
-    }else{
-      throw new Error("This course is no longer available");
+    if(filteredData.length > 0 ) {
+      throw new Error("You have already enrolled in this course")
     }
+
+    findCourse.enrolledMembers.push({
+      member:_id,
+      totalLessonsCompleted:[]
+    });
+
+    
+    await findCourse.save();
+
+    res.json({
+      message:"You are succesfully enrolled to this course"
+    })
+    
   } catch (error) {
-    throw new Error("Unable to enroll you this course");
+    throw new Error(error);
   }
+})
+
+const getMyEnrolledCourses=asyncHandler(async(req,res)=>{
+  const { _id } = req.user;
+  validateMongoDbId(_id);
+  try {
+    const getCourses = await Courses.find();
+
+    const getMyCourse=getCourses.filter(course=> course.enrolledMembers.some(async(obj) => obj._id === _id))
+
+  console.log(getMyCourse);
+
+    res.json(getMyCourse);
+  } catch (error) {
+    throw new Error(error);
+  }
+
+
 })
 
 
@@ -369,5 +388,6 @@ module.exports = {
   disableMember,
   unblockMember,
   enrollToCourse,
-  viewProfile
+  viewProfile,
+  getMyEnrolledCourses
 };
