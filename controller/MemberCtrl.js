@@ -361,7 +361,6 @@ const getMyEnrolledCourses=asyncHandler(async(req,res)=>{
 
     const getMyCourse=getCourses.filter(course=> course.enrolledMembers.some(async(obj) => obj._id === _id))
 
-  console.log(getMyCourse);
 
     res.json(getMyCourse);
   } catch (error) {

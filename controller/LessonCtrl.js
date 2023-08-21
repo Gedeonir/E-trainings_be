@@ -3,29 +3,41 @@ const asyncHandler = require("express-async-handler");
 const validateMongoDbId = require("../utils/validateMongodbId");
 const Course=require("../models/coursesModel");
 
+function isValidYouTubeLinkWithVideoId(input) {
+    const youtubeRegex = /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=|embed\/|v\/|u\/\w\/|embed\/|e\/\?v=|v=|watch\?v=|v\/|embeds\/\?v=|e\/|watch\?v=|v=)([^#\&\?]*).*/;
+    
+    try {
+      const url = new URL(input);
+      const match = url.href.match(youtubeRegex);
+      return match && match[1] !== undefined;
+    } catch (error) {
+      return false;
+    }
+}
+
 const addLesson=asyncHandler(async(req,res)=>{
     const {course} = req.params
 
     const{
         lessonTitle,
-        lessonVideoId,
+        lessonVideo,
         Notes
     }=req.body
+    if(!lessonTitle || !lessonVideo || !Notes) throw new Error("All fields are required");
 
+    if (!isValidYouTubeLinkWithVideoId(lessonVideo)) {
+        throw new Error("Invalid link");
+    }
 
-    try {
+    const getCourse=await Course.findOne({_id:course});
 
-        const Course=await Course.findOne({_id:course});
+    if(!getCourse) throw new Error("Course no longer Exists");
 
-        if(!Course) throw new Error("Course no longer Exists");
-
-        if(!lessonTitle || !lessonVideoId || !Notes) throw new Error("All fields are required");
-
-        if(await Lesson.findOne({lessonTitle})) throw new Error("Lesson already exists")
-
+    if(await Lesson.findOne({lessonTitle})) throw new Error("Lesson already exists")
+    else{
         const newLesson= await Lesson.create({
             lessonTitle,
-            lessonVideoId,
+            lessonVideoId:lessonVideo.split('v=')[1],
             Notes,
             Course:Course._id
         });
@@ -34,10 +46,9 @@ const addLesson=asyncHandler(async(req,res)=>{
         res.json({
             message:`new Lesson"${newLesson.lessonTitle}" is added to this course`,
         })
-
-    } catch (error) {
-        throw new Error(error)
     }
+
+
 })
 
 const getCourseAllLessons=asyncHandler(async(req,res)=>{
