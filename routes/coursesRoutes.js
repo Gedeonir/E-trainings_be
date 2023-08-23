@@ -11,7 +11,7 @@ router.post("/addNewCourse",authMiddlewareAdmin,isAdmin,addNewCourse)
 router.get("/:id",getOneCourse);
 router.post("/:course/addLesson",authMiddlewareAdmin,isAdmin,addLesson);
 router.get("/:course/lessons",getCourseAllLessons);
-router.get("/lesson/:id",getOneLesson)
+router.get("/:course/lessons/:id",getOneLesson)
 router.patch("/lesson/:id",authMiddlewareAdmin,updateLesson)
 router.delete("/lesson/:id",authMiddlewareAdmin,deleteLesson)
 

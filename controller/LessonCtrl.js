@@ -39,7 +39,7 @@ const addLesson=asyncHandler(async(req,res)=>{
             lessonTitle,
             lessonVideoId:lessonVideo.split('v=')[1],
             Notes,
-            Course:Course._id
+            Course:getCourse._id
         });
 
 
@@ -55,6 +55,8 @@ const getCourseAllLessons=asyncHandler(async(req,res)=>{
     const {course} = req.params
     validateMongoDbId(course);
 
+    console.log(course);
+
     try {
         const getAllLessons=await Lesson.find({Course:course}).populate("Course")
         res.json(getAllLessons);
@@ -67,9 +69,11 @@ const getOneLesson=asyncHandler(async(req,res)=>{
     const {id}=req.params;
     validateMongoDbId(id);
 
+    const {course}=req.params;
+
     
     try {
-        const getLesson= await Lesson.findOne({_id:id}).populate("Course")
+        const getLesson= await Lesson.findOne({_id:id,Course:course}).populate("Course")
         res.json({
             getLesson
         })
