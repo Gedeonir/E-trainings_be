@@ -28,7 +28,6 @@ var courseSchema = new mongoose.Schema(
     },
     enrolledMembers: [{
       member:{type: mongoose.Schema.Types.ObjectId, ref: "Members"},
-      totalLessonsCompleted:[{type: mongoose.Schema.Types.ObjectId, ref: "Lessons"},{ _id : false }] 
     },{ _id : false }],
     ratingsAndReviews: [
       {

@@ -20,6 +20,9 @@ var lessonSchema = new mongoose.Schema(
         type: String,
         required: true,
     },
+    completedBy: [{
+      member:{type: mongoose.Schema.Types.ObjectId, ref: "Members"},
+    },{ _id : false }],
 
   },
   {

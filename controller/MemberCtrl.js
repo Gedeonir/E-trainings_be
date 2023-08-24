@@ -10,6 +10,7 @@ const validateMongoDbId = require("../utils/validateMongodbId");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const sendSMS=require("../utils/sendSms");
+const lessonModel = require("../models/lessonModel");
 
 
 const getMemberCategory=(yearOfMarriage)=>{
@@ -353,6 +354,41 @@ const enrollToCourse=asyncHandler(async(req,res)=>{
   }
 })
 
+const completeLesson=asyncHandler(async(req,res)=>{
+  const { _id } = req.user;
+  validateMongoDbId(_id);
+
+  const {lesson}=req.params
+
+  const findLesson= await lessonModel.findOne({_id:lesson});
+
+  if (!findLesson) throw new Error("This lesson is no longer available"); 
+
+  try {
+    const data =findLesson?.completedBy
+        
+    const filteredData = data?.filter(item => item?.member?.equals(_id));
+
+    if(filteredData.length > 0 ) {
+      throw new Error("You have already completed this lesson")
+    }
+
+    findLesson.completedBy.push({
+      member:_id,
+    });
+
+    
+    await findLesson.save();
+
+    res.json({
+      message:"You are succesfully completed this lesson"
+    })
+    
+  } catch (error) {
+    throw new Error(error);
+  }
+})
+
 const getMyEnrolledCourses=asyncHandler(async(req,res)=>{
   const { _id } = req.user;
   validateMongoDbId(_id);
@@ -388,5 +424,6 @@ module.exports = {
   unblockMember,
   enrollToCourse,
   viewProfile,
-  getMyEnrolledCourses
+  getMyEnrolledCourses,
+  completeLesson
 };

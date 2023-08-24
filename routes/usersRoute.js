@@ -13,7 +13,8 @@ const {
   unblockMember,
   enrollToCourse,
   viewProfile,
-  getMyEnrolledCourses
+  getMyEnrolledCourses,
+  completeLesson
 } = require("../controller/MemberCtrl");
 
 const {
@@ -41,6 +42,7 @@ memberRoutes.patch("/:id",authMiddleware,updatedMember)
 memberRoutes.patch("/block-member/:id", authMiddleware, isAdmin, disableMember);
 memberRoutes.patch("/unblock-member/:id", authMiddleware, isAdmin, unblockMember);
 memberRoutes.patch("/enroll/:course", authMiddleware, enrollToCourse);
+memberRoutes.patch("/complete/:lesson", authMiddleware, completeLesson);
 memberRoutes.get("/my/courses", authMiddleware, getMyEnrolledCourses);
 memberRoutes.get("/my/profile",authMiddleware,viewProfile)
 
