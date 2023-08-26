@@ -36,7 +36,7 @@ memberRoutes.get("/all-members", getAllMembers);
 memberRoutes.patch("/forgot-password", forgotPassword);
 memberRoutes.patch("/reset-password/:OTPCode", resetPassword);
 memberRoutes.patch("/password", authMiddleware, changePassword);
-memberRoutes.get("/:id",authMiddleware,getOneMember);
+memberRoutes.get("/:id",getOneMember);
 memberRoutes.delete("/:id",deleteMember)
 memberRoutes.patch("/:id",authMiddleware,updatedMember)
 memberRoutes.patch("/block-member/:id", authMiddleware, isAdmin, disableMember);

@@ -394,15 +394,12 @@ const getMyEnrolledCourses=asyncHandler(async(req,res)=>{
   validateMongoDbId(_id);
   try {
     const getCourses = await Courses.find();
-
-    const getMyCourse=getCourses.filter(course=> course.enrolledMembers.some(async(obj) => obj._id === _id))
-
+    const getMyCourse=getCourses.filter(course=> course.enrolledMembers.some((obj) =>obj?.member?.equals(_id)))
 
     res.json(getMyCourse);
   } catch (error) {
     throw new Error(error);
   }
-
 
 })
 
