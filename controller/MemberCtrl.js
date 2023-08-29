@@ -370,7 +370,7 @@ const completeLesson=asyncHandler(async(req,res)=>{
     const filteredData = data?.filter(item => item?.member?.equals(_id));
 
     if(filteredData.length > 0 ) {
-      throw new Error("You have already completed this lesson")
+      return;
     }
 
     findLesson.completedBy.push({

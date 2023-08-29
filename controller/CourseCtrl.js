@@ -3,6 +3,7 @@ const Tutor=require("../models/tutorModel")
 const Category=require("../models/categoryModel")
 const asyncHandler = require("express-async-handler");
 const validateMongoDbId = require("../utils/validateMongodbId");
+const Member = require("../models/memberModel");
 
 
 const addNewCourse=asyncHandler(async(req,res)=>{
@@ -91,10 +92,61 @@ const deleteLesson=asyncHandler(async(req,res)=>{
 })
 
 
+const calculatePopularityScore=(course,totalUsers)=>{
+    const w = 100;    
+    const enrollmentRate = course?.enrolledMembers?.length / totalUsers;
+    const completionRate = course?.completedBy?.length / course.enrolledMembers?.length;
+    
+    const popularityScore = w* enrollmentRate + w * completionRate;
+    
+    return popularityScore;
+}
+
+const filterByPopularity=asyncHandler(async(req,res)=>{
+    try{
+
+        const courses = await Courses.find().populate("courseCategory").populate("courseTutors");
+
+        for (const course of courses) {
+            let getMembers =course?.courseCategory?.categoryName =='Junior'?(
+                await Member.find({memberCategory:'Junior'})
+            ):(
+                course?.courseCategory?.categoryName =='Flowers'?(
+                    await Member.find({memberCategory: { $in: ['Junior','Flowers']}})
+                ):(
+                    course?.courseCategory?.categoryName =='Eagle'?(
+                        await Member.find({memberCategory:{ $in: ['Junior','Flowers','Eagle']}})
+                    ):(
+                        course?.courseCategory?.categoryName =='Excellent'?(
+                            await Member.find({memberCategory:{ $in: ['Junior','Flowers','Eagle','Excellent']}})
+                        ):(
+                            await Member.find()
+                        )
+                    )
+                )
+            );
+
+            const popularityScore = calculatePopularityScore(course,getMembers?.length);
+            course.popularityScore = popularityScore;
+            await course.save()
+        }
+        
+        // Sort courses based on popularity score in descending order
+        courses.sort((a, b) => b.popularityScore - a.popularityScore);
+        
+        // Print the sorted courses
+        res.json(courses)  
+    }catch(error){
+        throw new Error(error)
+    }     
+})
+
+
 
 module.exports={
     getAllCourses,
     addNewCourse,
-    getOneCourse
+    getOneCourse,
+    filterByPopularity
     
 }
