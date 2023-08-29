@@ -46,15 +46,9 @@ var memberSchema = new mongoose.Schema(
     church: {
       type: String,
     },
-    enrolledCourses:[
-      {
-        course:{ type: mongoose.Schema.Types.ObjectId, ref: "Courses" },
-        totalLessonsCompleted:[
-          {type: mongoose.Schema.Types.ObjectId, ref: "Lessons"}
-        ]
-      },
-      { _id : false }
-    ],
+    score:{
+      type:String
+    },
     passwordChangedAt: Date,
     passwordResetCode: Number,
     passwordResetExpires: Date,

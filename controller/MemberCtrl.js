@@ -153,8 +153,6 @@ const viewProfile=asyncHandler(async(req,res)=>{
 
   try{
     const getProfile = await Member.findById(_id,{password:0,passwordResetToken:0,passwordResetExpires:0})
-      .populate({path:"enrolledCourses",populate:"course"})
-      .populate({path:"enrolledCourses",populate:"totalLessonsCompleted"});
 
     res.json({
       getProfile,
@@ -403,6 +401,31 @@ const getMyEnrolledCourses=asyncHandler(async(req,res)=>{
 
 })
 
+const filterMemberByScore=asyncHandler(async(req,res)=>{
+  try{
+
+      const members = await Member.find()
+      const courses=await Courses.find()
+
+      for (const member of members) {
+        const getMemberCourse=courses.filter(course=> course.completedBy.some((obj) =>obj?.member?.equals(member._id)))
+
+
+          const score = getMemberCourse?.length/courses?.length;
+          member.score = 100 * score;
+          await member.save()
+      }
+      
+      // Sort courses based on popularity score in descending order
+      members.sort((a, b) => b.score - a.score);
+      
+      // Print the sorted courses
+      res.json(members)  
+  }catch(error){
+      throw new Error(error)
+  }     
+})
+
 
 
 
@@ -422,5 +445,6 @@ module.exports = {
   enrollToCourse,
   viewProfile,
   getMyEnrolledCourses,
-  completeLesson
+  completeLesson,
+  filterMemberByScore
 };
