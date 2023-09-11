@@ -3,8 +3,76 @@ const dbConnect = require("../config/dbConnect");
 const { default: mongoose } = require("mongoose");
 const dotenv = require("dotenv");
 const bcrypt = require("bcrypt");
+const memberModel = require("../models/memberModel");
 
 dotenv.config();
+
+const membersDummyData=[
+{
+    fullNames:"Ishimwe Fillette Honorine",
+    mobile:"0780000001",
+    gender:"Female",
+    district:"AUCA",
+    church:"AUCA",
+    ID:"1199870000000001",
+},
+{
+    fullNames:"Ishimwe Fillette",
+    mobile:"0780000002",
+    gender:"Female",
+    district:"Remera",
+    church:"Remera",
+    ID:"1198870000000002",
+},
+{
+    fullNames:"Ishimwe Claude",
+    mobile:"07800000003",
+    gender:"Male",
+    district:"AUCA",
+    church:"AUCA",
+    ID:"1196980000000003",
+},
+{
+    fullNames:"Cyiza Samson",
+    mobile:"07800000004",
+    gender:"Male",
+    district:"Remera",
+    church:"Bibare",
+    ID:"1200580000000004",
+},
+{
+    fullNames:"Shami Elba",
+    mobile:"07800000095",
+    gender:"Male",
+    district:"Remera",
+    church:"Nyabisindu",
+    ID:"1200580000000005",
+},
+{
+    fullNames:"Ishimwe Vicky",
+    mobile:"07800000005",
+    gender:"Female",
+    district:"Rusororo",
+    church:"Masaka",
+    ID:"1199670000000015",
+},
+{
+    fullNames:"Emime Ntanganda",
+    mobile:"07800008005",
+    gender:"Male",
+    district:"Cyirabo",
+    church:"Rukoro",
+    ID:"1199680000005315",
+},
+{
+    fullNames:"Alice Ingabire",
+    mobile:"07800000205",
+    gender:"Female",
+    district:"Mayange",
+    church:"Rukoro",
+    ID:"1200370000005375",
+}
+]
 
 const seedUser=async()=>{
     const salt = await bcrypt.genSaltSync(10);
@@ -17,11 +85,13 @@ const seedUser=async()=>{
     }]
     try {
         await Admin.deleteMany({});
+        await memberModel.deleteMany({})
         await Admin.insertMany(adminUser);
-        console.log("Default user created succesfully")
+        await memberModel.insertMany(membersDummyData);
+        console.log("success")
     } catch (error) {
 
-        console.log("Creating default user failed\n",error);
+        console.log("seeds failed\n",error);
         
     }
 

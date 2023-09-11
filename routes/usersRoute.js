@@ -1,22 +1,22 @@
 const express = require("express");
 const {
-  createMember,
-  loginMemberCtrl,
-  getAllMembers,
+  createTrainee,
+  loginTraineeCtrl,
+  getAllTrainees,
   forgotPassword,
   resetPassword,
   changePassword,
-  getOneMember,
-  updatedMember,
-  deleteMember,
-  disableMember,
-  unblockMember,
+  getOneTrainee,
+  updatedTrainee,
+  deleteTrainee,
+  disableTrainee,
+  unblockTrainee,
   enrollToCourse,
   viewProfile,
   getMyEnrolledCourses,
   completeLesson,
-  filterMemberByScore
-} = require("../controller/MemberCtrl");
+  filterTraineeByScore
+} = require("../controller/TraineeCtrl");
 
 const {
   loginAdmin,
@@ -28,25 +28,25 @@ const {
 } = require("../controller/AdminCtrl");
 
 const { authMiddleware, isAdmin, authMiddlewareAdmin } = require("../middlewares/authMiddleware");
-const memberRoutes = express.Router();
+const traineeRoutes = express.Router();
 const adminRoutes=express.Router();
 
-memberRoutes.post("/register", createMember);
-memberRoutes.post("/login", loginMemberCtrl);
-memberRoutes.get("/all-members", getAllMembers);
-memberRoutes.patch("/forgot-password", forgotPassword);
-memberRoutes.patch("/reset-password/:OTPCode", resetPassword);
-memberRoutes.patch("/password", authMiddleware, changePassword);
-memberRoutes.get("/:id",getOneMember);
-memberRoutes.delete("/:id",deleteMember)
-memberRoutes.patch("/:id",authMiddleware,updatedMember)
-memberRoutes.patch("/block-member/:id", authMiddleware, isAdmin, disableMember);
-memberRoutes.patch("/unblock-member/:id", authMiddleware, isAdmin, unblockMember);
-memberRoutes.patch("/enroll/:course", authMiddleware, enrollToCourse);
-memberRoutes.patch("/complete/:lesson", authMiddleware, completeLesson);
-memberRoutes.get("/my/courses", authMiddleware, getMyEnrolledCourses);
-memberRoutes.get("/my/profile",authMiddleware,viewProfile);
-memberRoutes.get("/top/member",filterMemberByScore);
+traineeRoutes.post("/register", createTrainee);
+traineeRoutes.post("/login", loginTraineeCtrl);
+traineeRoutes.get("/all-trainees", getAllTrainees);
+traineeRoutes.patch("/forgot-password", forgotPassword);
+traineeRoutes.patch("/reset-password/:OTPCode", resetPassword);
+traineeRoutes.patch("/password", authMiddleware, changePassword);
+traineeRoutes.get("/:id",getOneTrainee);
+traineeRoutes.delete("/:id",deleteTrainee)
+traineeRoutes.patch("/:id",authMiddleware,updatedTrainee)
+traineeRoutes.patch("/block-Trainee/:id", authMiddleware, isAdmin, disableTrainee);
+traineeRoutes.patch("/unblock-Trainee/:id", authMiddleware, isAdmin, unblockTrainee);
+traineeRoutes.patch("/enroll/:course", authMiddleware, enrollToCourse);
+traineeRoutes.patch("/complete/:lesson", authMiddleware, completeLesson);
+traineeRoutes.get("/my/courses", authMiddleware, getMyEnrolledCourses);
+traineeRoutes.get("/my/profile",authMiddleware,viewProfile);
+traineeRoutes.get("/top/Trainee",filterTraineeByScore);
 
 
 adminRoutes.post("/login", loginAdmin);
@@ -56,4 +56,4 @@ adminRoutes.patch("/password", authMiddlewareAdmin, changePasswordAdmin);
 adminRoutes.patch("/:id", authMiddlewareAdmin, updatedProfile);
 adminRoutes.get("/my/profile",authMiddlewareAdmin,viewAdminProfile)
 
-module.exports = {memberRoutes,adminRoutes};
+module.exports = {traineeRoutes,adminRoutes};

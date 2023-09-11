@@ -21,7 +21,7 @@ var lessonSchema = new mongoose.Schema(
         required: true,
     },
     completedBy: [{
-      member:{type: mongoose.Schema.Types.ObjectId, ref: "Members"},
+      member:{type: mongoose.Schema.Types.ObjectId, ref: "Trainees"},
     },{ _id : false }],
 
   },

@@ -1,4 +1,4 @@
-const Member = require("../models/memberModel");
+const Trainee = require("../models/traineeModel");
 const Courses = require("../models/coursesModel")
 const uniqid = require("uniqid");
 const bcrypt = require("bcrypt");
@@ -11,9 +11,10 @@ const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const sendSMS=require("../utils/sendSms");
 const lessonModel = require("../models/lessonModel");
+const memberModel = require("../models/memberModel");
 
 
-const getMemberCategory=(yearOfMarriage)=>{
+const getTraineeCategory=(yearOfMarriage)=>{
   const yearsOfMarriage = new Date().getFullYear() - yearOfMarriage;
 
   if(yearsOfMarriage <= 10) return "Flowers"
@@ -23,48 +24,86 @@ const getMemberCategory=(yearOfMarriage)=>{
   
 }
 
-
-// Create a Member ----------------------------------------------
-
-const createMember = asyncHandler(async (req, res) => {
-  const {isMarried,yearOfMarriage,fullNames,age,mobile,password,district,church} = req.body
-
-  const reg = new RegExp("^((072|078|073))[0-9]{7}$", "i");
+function getAge(IDNumber){
+  const getDOB=IDNumber.split('').slice(1,5).join('');
   
-  if(!fullNames||!age||!mobile||!password || !district || !church) throw new Error("All fields are required");
+  return new Date().getFullYear() - parseInt(getDOB)
+  
+}
 
-  if (!reg.test(mobile)) throw new Error("Invalid phone number, it has to start with one of 078/072/073 and it must be ten digits")
+
+const isElegibleForGettingMarried=(ID)=>{
+  const getDOB=ID.split('').slice(1,5).join('');
+  
+  if(new Date().getFullYear() - parseInt(getDOB) < 21){
+    return false
+  }else
+    return true    
+    
+}
+
+function isFemale(IDNumber){
+  const getGender=IDNumber.split('').slice(5)[0];
+    
+  if(getGender== 8){
+      return false
+  }else
+      return true    
+  
+}
+
+
+// Create a Trainee ----------------------------------------------
+
+const createTrainee = asyncHandler(async (req, res) => {
+  const {isMarried,yearOfMarriage,ID,password} = req.body
+
+  const reg = new RegExp("^((1|2))[0-9]{15}$", "i");
+  
+  if(!ID || !password) throw new Error("ID and password are required");
+
+  if (!reg.test(ID)) throw new Error("Invalid ID")
+
+  const findMember=await memberModel.findOne({ ID:ID })
+  if(!findMember) throw new Error("Trainings are only available for members of SDA church")
+
+  if(!isFemale(ID)) throw new Error("Trainings are only available for female members of the SDA church")
+
+  if(isMarried && !isElegibleForGettingMarried(ID)) throw new Error("You must be above 21 to get married")
   
   if(isMarried && !yearOfMarriage) throw new Error("Please specify year of Marriage");
 
-  if(yearOfMarriage > new Date().getFullYear()) throw new Error("The year of marriage must not exceeds today's date")
+  if(yearOfMarriage > new Date().getFullYear()) throw new Error("The year of marriage must not exceeds today's date");
+  
+
 
   /**
-   * TODO:With the help of mobile find the Member exists or not
+   * TODO:With the help of mobile find the Trainee exists or not
    */
-  const findMember = await Member.findOne({ mobile: mobile });
+  const findTrainee = await Trainee.findOne({ ID:ID });
 
-  if (!findMember) {
+  if (!findTrainee) {
     /**
-     * TODO:if Member not found Member create a new Member
+     * TODO:if Trainee not found Trainee create a new Trainee
      */
-    const newMember = await Member.create(
+    const newTrainee = await Trainee.create(
       {
-        fullNames:fullNames,
-        age:age,
-        mobile:mobile,
+        fullNames:findMember?.fullNames,
+        ID:ID,
+        age:await getAge(ID),
+        mobile:findMember?.mobile,
         isMarried:isMarried,
         yearOfMarriage:yearOfMarriage,
         password:password,
-        memberCategory:isMarried?getMemberCategory(yearOfMarriage):"Junior",
-        district:district,
-        church: church,
+        traineeCategory:isMarried?getTraineeCategory(yearOfMarriage):"Junior",
+        district:findMember?.district,
+        church: findMember?.church,
       }
     );
 
 
     // const data	=	{
-    //   'recipients':`${newMember.mobile}`,
+    //   'recipients':`${newTrainee.mobile}`,
     //   'message':`Welcome to our project`,
     //   'sender':'+250780689938'
     // }
@@ -72,60 +111,58 @@ const createMember = asyncHandler(async (req, res) => {
     // sendSMS(data);
 
     res.json({
-      message:"Member registered",
-      newMember
+      message:"Trainee registered",
+      newTrainee
     });
   } else {
     /**
-     * TODO:if Member found then thow an error: Member already exists
+     * TODO:if Trainee found then thow an error: Trainee already exists
      */
-    throw new Error("Member phone number Already Exists");
+    throw new Error("Trainee Already Registered");
   }
 
 });
 
-// Login a Member
-const loginMemberCtrl = asyncHandler(async (req, res) => {
-  const { mobile, password } = req.body;
+// Login a Trainee
+const loginTraineeCtrl = asyncHandler(async (req, res) => {
+  const { ID, password } = req.body;
 
-  if(!mobile || !password) throw new Error("All fields are required")
-  // check if Member exists or not
-  const findMember = await Member.findOne({ mobile:mobile });
-  if (findMember && (await findMember.isPasswordMatched(password))) {
+  if(!ID || !password) throw new Error("All fields are required")
+  // check if Trainee exists or not
+  const findTrainee = await Trainee.findOne({ ID:ID });
+  if (findTrainee && (await findTrainee.isPasswordMatched(password))) {
 
-    if(findMember.isDisabled) throw new Error("You are account is temporary disabled,Contact your site admin")
+    if(findTrainee.isDisabled) throw new Error("You are account is temporary disabled,Contact your site admin")
     res.json({
-      _id: findMember?._id,
-      fullNames: findMember?.fullNames,
-      role: findMember?.role,
-      mobile: findMember?.mobile,
-      token: generateToken(findMember?._id),
+      _id: findTrainee?._id,
+      fullNames: findTrainee?.fullNames,
+      role: findTrainee?.role,
+      mobile: findTrainee?.mobile,
+      token: generateToken(findTrainee?._id),
     });
   } else {
     throw new Error("Mobile or password don't match");
   }
 });
 
-const getAllMembers = asyncHandler(async (req, res) => {
+const getAllTrainees = asyncHandler(async (req, res) => {
   try {
-    const getMembers = await Member.find({},{password:0,passwordResetToken:0,passwordResetExpires:0});
-    res.json(getMembers);
+    const getTrainees = await Trainee.find({},{password:0,passwordResetToken:0,passwordResetExpires:0});
+    res.json(getTrainees);
   } catch (error) {
     throw new Error(error);
   }
 });
 
-const getOneMember = asyncHandler(async (req, res) => {
+const getOneTrainee = asyncHandler(async (req, res) => {
   const { id } = req.params;
   validateMongoDbId(id);
 
   try {
-    const getOneMember = await Member.findById(id,{password:0,passwordResetToken:0,passwordResetExpires:0})
-    .populate({path:"enrolledCourses",populate:"course"})
-    .populate({path:"enrolledCourses",populate:"totalLessonsCompleted"});
+    const getOneTrainee = await Trainee.findById(id,{password:0,passwordResetToken:0,passwordResetExpires:0})
 
     res.json({
-      getOneMember,
+      getOneTrainee,
     });
   } catch (error) {
     throw new Error(error);
@@ -133,12 +170,12 @@ const getOneMember = asyncHandler(async (req, res) => {
 });
 
 
-const deleteMember = asyncHandler(async (req, res) => {
+const deleteTrainee = asyncHandler(async (req, res) => {
   const { id } = req.params;
   validateMongoDbId(id);
 
   try {
-    await Member.findByIdAndDelete(id);
+    await Trainee.findByIdAndDelete(id);
     res.json({
       message:"User deleted succesfully",
     });
@@ -152,18 +189,18 @@ const viewProfile=asyncHandler(async(req,res)=>{
   validateMongoDbId(_id);
 
   try{
-    const getProfile = await Member.findById(_id,{password:0,passwordResetToken:0,passwordResetExpires:0})
+    const getProfile = await Trainee.findById(_id,{password:0,passwordResetToken:0,passwordResetExpires:0})
 
     res.json({
       getProfile,
     });
   } catch (error) {
-    throw new Error(error);
+    throw new Error("error");
   }
 
 })
 
-const updatedMember = asyncHandler(async (req, res) => {
+const updatedTrainee = asyncHandler(async (req, res) => {
   const { _id } = req.user;
   validateMongoDbId(_id);
 
@@ -175,7 +212,7 @@ const updatedMember = asyncHandler(async (req, res) => {
   if(isMarried && !yearOfMarriage) throw new Error("Please specify year of Marriage")
 
   try {
-    const updatedUser = await Member.findByIdAndUpdate(
+    const updatedUser = await Trainee.findByIdAndUpdate(
       _id,
       {
         fullNames: req?.body?.fullNames,
@@ -183,7 +220,7 @@ const updatedMember = asyncHandler(async (req, res) => {
         mobile: req?.body?.mobile,
         isMarried:req?.body?.isMarried,
         yearOfMarriage:req?.body?.yearOfMarriage,
-        memberCategory:isMarried?getMemberCategory(yearOfMarriage):"Junior",
+        TraineeCategory:isMarried?getTraineeCategory(yearOfMarriage):"Junior",
         district: req?.body?.district,
         church: req?.body?.church,
       },
@@ -197,12 +234,12 @@ const updatedMember = asyncHandler(async (req, res) => {
   }
 });
 
-const disableMember = asyncHandler(async (req, res) => {
+const disableTrainee = asyncHandler(async (req, res) => {
   const { id } = req.params;
   validateMongoDbId(id);
 
   try {
-    const blockMember = await Member.findByIdAndUpdate(
+    const blockTrainee = await Trainee.findByIdAndUpdate(
       id,
       {
         isDisabled: true,
@@ -211,18 +248,18 @@ const disableMember = asyncHandler(async (req, res) => {
         new: true,
       }
     );
-    res.json({message:`Member ${blockMember.fullNames} is temporary suspended`});
+    res.json({message:`Trainee ${blockTrainee.fullNames} is temporary suspended`});
   } catch (error) {
     throw new Error(error);
   }
 });
 
-const unblockMember = asyncHandler(async (req, res) => {
+const unblockTrainee = asyncHandler(async (req, res) => {
   const { id } = req.params;
   validateMongoDbId(id);
 
   try {
-    const unblock = await Member.findByIdAndUpdate(
+    const unblock = await Trainee.findByIdAndUpdate(
       id,
       {
         isBlocked: false,
@@ -232,7 +269,7 @@ const unblockMember = asyncHandler(async (req, res) => {
       }
     );
     res.json({
-      message: `Member ${unblock.fullNames} is UnBlocked`,
+      message: `Trainee ${unblock.fullNames} is UnBlocked`,
     });
   } catch (error) {
     throw new Error(error);
@@ -242,13 +279,13 @@ const unblockMember = asyncHandler(async (req, res) => {
 
 const forgotPassword = asyncHandler(async (req, res) => {
   const { mobile } = req.body;
-  const member = await Member.findOne({ mobile });
-  if (!member) throw new Error("Member not found with this mobile");
+  const Trainee = await Trainee.findOne({ mobile });
+  if (!Trainee) throw new Error("Trainee not found with this mobile");
   try {
-    const OTPCode = await member.createPasswordResetToken();
-    await member.save();
+    const OTPCode = await Trainee.createPasswordResetToken();
+    await Trainee.save();
     const data	=	{
-      'recipients':`${member.mobile}`,
+      'recipients':`${Trainee.mobile}`,
       'message':`
       Kode yo guhindura ijambo banga ryawe ni \n \n ${OTPCode}.
 
@@ -269,15 +306,15 @@ const forgotPassword = asyncHandler(async (req, res) => {
 const resetPassword = asyncHandler(async (req, res) => {
   const { password } = req.body;
   const { OTPCode } = req.params;
-  const member = await Member.findOne({
+  const Trainee = await Trainee.findOne({
     passwordResetToken: OTPCode,
     passwordResetExpires: { $gt: Date.now() },
   });
-  if (!member) throw new Error(" OTP Code Expired or is invalid, Request another one");
-  member.password = password;
-  member.passwordResetCode = undefined;
-  member.passwordResetExpires = undefined;
-  await member.save();
+  if (!Trainee) throw new Error(" OTP Code Expired or is invalid, Request another one");
+  Trainee.password = password;
+  Trainee.passwordResetCode = undefined;
+  Trainee.passwordResetExpires = undefined;
+  await Trainee.save();
   res.json({
     message:"Password changed succesfully"
   });
@@ -290,12 +327,12 @@ const changePassword = asyncHandler(async (req, res) => {
 
   try {
     //3.get Userfrom token by uuid
-    const member= await Member.findOne({_id});
+    const Trainee= await Trainee.findOne({_id});
     //4.get password from reques body
     const { oldpassword, newpassword1, newpassword2 } = req.body;
 
     //5. Check passwords
-    const password = await bcrypt.compare(oldpassword, member.password);
+    const password = await bcrypt.compare(oldpassword, Trainee.password);
     if (!password) {
       throw new Error("The old password is wrong, correct it and try again");
     }
@@ -306,7 +343,7 @@ const changePassword = asyncHandler(async (req, res) => {
     //6.hash password
 
     //update pass
-    member.password = newpassword1;
+    Trainee.password = newpassword1;
     await user.save();
 
     res.json({ message: "your password is updated successfully" });
@@ -327,7 +364,7 @@ const enrollToCourse=asyncHandler(async(req,res)=>{
   if (!findCourse) throw new Error("This course is no longer available"); 
 
   try {
-    const data =findCourse?.enrolledMembers
+    const data =findCourse?.enrolledTrainees
         
     const filteredData = data?.filter(item => item?.member?.equals(_id));
 
@@ -335,9 +372,8 @@ const enrollToCourse=asyncHandler(async(req,res)=>{
       throw new Error("You have already enrolled in this course")
     }
 
-    findCourse.enrolledMembers.push({
+    findCourse.enrolledTrainees.push({
       member:_id,
-      totalLessonsCompleted:[]
     });
 
     
@@ -392,7 +428,7 @@ const getMyEnrolledCourses=asyncHandler(async(req,res)=>{
   validateMongoDbId(_id);
   try {
     const getCourses = await Courses.find();
-    const getMyCourse=getCourses.filter(course=> course.enrolledMembers.some((obj) =>obj?.member?.equals(_id)))
+    const getMyCourse=getCourses.filter(course=> course.enrolledTrainees.some((obj) =>obj?.member?.equals(_id)))
 
     res.json(getMyCourse);
   } catch (error) {
@@ -401,26 +437,26 @@ const getMyEnrolledCourses=asyncHandler(async(req,res)=>{
 
 })
 
-const filterMemberByScore=asyncHandler(async(req,res)=>{
+const filterTraineeByScore=asyncHandler(async(req,res)=>{
   try{
 
-      const members = await Member.find()
+      const Trainees = await Trainee.find()
       const courses=await Courses.find()
 
-      for (const member of members) {
-        const getMemberCourse=courses.filter(course=> course.completedBy.some((obj) =>obj?.member?.equals(member._id)))
+      for (const Trainee of Trainees) {
+        const getTraineeCourse=courses.filter(course=> course.completedBy.some((obj) =>obj?.member?.equals(Trainee._id)))
 
 
-          const score = getMemberCourse?.length/courses?.length;
-          member.score = 100 * score;
-          await member.save()
+          const score = getTraineeCourse?.length/courses?.length;
+          Trainee.score = 100 * score;
+          await Trainee.save()
       }
       
       // Sort courses based on popularity score in descending order
-      members.sort((a, b) => b.score - a.score);
+      Trainees.sort((a, b) => b.score - a.score);
       
       // Print the sorted courses
-      res.json(members)  
+      res.json(Trainees)  
   }catch(error){
       throw new Error(error)
   }     
@@ -431,20 +467,20 @@ const filterMemberByScore=asyncHandler(async(req,res)=>{
 
 
 module.exports = {
-  createMember,
-  loginMemberCtrl,
-  getAllMembers,
+  createTrainee,
+  loginTraineeCtrl,
+  getAllTrainees,
   forgotPassword,
   resetPassword,
   changePassword,
-  getOneMember,
-  updatedMember,
-  deleteMember,
-  disableMember,
-  unblockMember,
+  getOneTrainee,
+  updatedTrainee,
+  deleteTrainee,
+  disableTrainee,
+  unblockTrainee,
   enrollToCourse,
   viewProfile,
   getMyEnrolledCourses,
   completeLesson,
-  filterMemberByScore
+  filterTraineeByScore
 };

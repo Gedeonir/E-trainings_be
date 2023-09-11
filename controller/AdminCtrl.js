@@ -14,10 +14,6 @@ const loginAdmin = asyncHandler(async (req, res) => {
     const findAdmin = await Admin.findOne({ email });
     if (findAdmin && (await findAdmin.isPasswordMatched(password))) {
       res.json({
-        _id: findAdmin?._id,
-        fullNames: findAdmin?.fullNames,
-        email: findAdmin?.email,
-        mobile: findAdmin?.mobile,
         token: generateToken(findAdmin?._id),
       });
     } else {

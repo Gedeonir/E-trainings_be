@@ -1,5 +1,5 @@
 
-const Member = require("../models/memberModel");
+const Trainee = require("../models/traineeModel");
 const Admin =require("../models/adminModel");
 const jwt = require("jsonwebtoken");
 const asyncHandler = require("express-async-handler");
@@ -11,7 +11,7 @@ const authMiddleware = asyncHandler(async (req, res, next) => {
     try {
       if (token) {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const user = await Member.findById(decoded?.id);
+        const user = await Trainee.findById(decoded?.id);
         req.user = user;
         next();
       }

@@ -26,16 +26,16 @@ var courseSchema = new mongoose.Schema(
         type: mongoose.Schema.Types.ObjectId, ref: "CourseCategories",
         required:true
     },
-    enrolledMembers: [{
-      member:{type: mongoose.Schema.Types.ObjectId, ref: "Members"},
+    enrolledTrainees: [{
+      member:{type: mongoose.Schema.Types.ObjectId, ref: "Trainees"},
     },{ _id : false }],
-    completedBy:[{member:{type: mongoose.Schema.Types.ObjectId, ref: "Members"}},{ _id : false }],
+    completedBy:[{member:{type: mongoose.Schema.Types.ObjectId, ref: "Trainees"}},{ _id : false }],
     popularityScore:{
       type:String
     },
     ratingsAndReviews: [
       {
-        member:{type: mongoose.Schema.Types.ObjectId, ref: "Members"},
+        member:{type: mongoose.Schema.Types.ObjectId, ref: "Trainees"},
         review:{
             type:String
         },
