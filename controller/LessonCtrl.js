@@ -23,9 +23,9 @@ const addLesson=asyncHandler(async(req,res)=>{
         lessonVideo,
         Notes
     }=req.body
-    if(!lessonTitle || !lessonVideo || !Notes) throw new Error("All fields are required");
+    if(!lessonTitle || !Notes) throw new Error("All fields are required");
 
-    if (!isValidYouTubeLinkWithVideoId(lessonVideo)) {
+    if (lessonVideo && !isValidYouTubeLinkWithVideoId(lessonVideo)) {
         throw new Error("Invalid link");
     }
 
@@ -37,7 +37,7 @@ const addLesson=asyncHandler(async(req,res)=>{
     else{
         const newLesson= await Lesson.create({
             lessonTitle,
-            lessonVideoId:lessonVideo.split('v=')[1],
+            lessonVideoId:lessonVideo?lessonVideo.split('v=')[1]:'',
             Notes,
             Course:getCourse._id
         });

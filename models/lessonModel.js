@@ -14,7 +14,6 @@ var lessonSchema = new mongoose.Schema(
     },
     lessonVideoId: {
       type: String,
-      required: true,
     },
     Notes: {
         type: String,
