@@ -33,7 +33,7 @@ const addLesson=asyncHandler(async(req,res)=>{
 
     if(!getCourse) throw new Error("Course no longer Exists");
 
-    if(await Lesson.findOne({lessonTitle})) throw new Error("Lesson already exists")
+    if(await Lesson.findOne({lessonTitle,Course:course})) throw new Error("Lesson already exists")
     else{
         const newLesson= await Lesson.create({
             lessonTitle,
