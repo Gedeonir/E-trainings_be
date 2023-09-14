@@ -13,8 +13,15 @@ const addQuizz=asyncHandler(async(req,res)=>{
         duration
     }=req.body
 
+
+
     if(!QuizName || !duration) throw new Error("All fields are required")
 
+    const verifyIfAnotherExamExists=await Quizzes.find({Course:course});
+
+    if (verifyIfAnotherExamExists.length>0) {
+        throw new Error("Course has Exam already, to add new One you must delete it.")
+    }
 
     const getCourse=await Course.findOne({_id:course});
 
@@ -30,7 +37,7 @@ const addQuizz=asyncHandler(async(req,res)=>{
 
 
         res.json({
-            message:`new questions "${newQuizz.QuizName}" is added to this course`,
+            message:`new exam "${newQuizz.QuizName}" is added to this course`,
         })
     }
 
@@ -116,7 +123,7 @@ const addQuizzQuestions=asyncHandler(async(req,res)=>{
 
 
         res.json({
-            message:`new quizz "${newQuizzQuestion.question}" is added to this course`,
+            message:`new question "${newQuizzQuestion.question}" is added to this exam`,
         })
     }
 
@@ -134,15 +141,17 @@ const markTheQuizz=asyncHandler(async(req,res)=>{
   
     if (!findQuizz) throw new Error("This Quizz is no longer available"); 
 
+    const getCourse=await Course.findOne({_id:findQuizz.Course})
+
 
     const getQuestions=await QuizzesQuestions.find({Quizz:quizz}).populate("Quizz")
-    const passMark=Math.round((getQuestions.length)/2)    
+    const passMark=Math.round((getQuestions.length)/2)  
+    
+    
 
     try {
 
         const data =findQuizz?.completedBy
-
-        console.log(data);
         
         const filteredData = data?.filter(item => item?.member?.equals(_id));
 
@@ -159,13 +168,20 @@ const markTheQuizz=asyncHandler(async(req,res)=>{
 
         findQuizz?.completedBy.push({
             member:_id,
-            score:marks
+            score:marks,
+            at:new Date.now()
         });
       
           
         await findQuizz.save();
 
         if (marks>=passMark) {
+            getCourse?.completedBy.push({
+                member:_id
+            })
+
+            await getCourse.save();
+
             res.json({
                 message:`Thank you for submitting your work. The pass mark was ${passMark}/${getQuestions.length} and you have got ${marks}/${getQuestions.length}
                 Congratulations!!!`

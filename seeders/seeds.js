@@ -26,7 +26,7 @@ const membersDummyData=[
 },
 {
     fullNames:"Ishimwe Claude",
-    mobile:"07800000003",
+    mobile:"0780000003",
     gender:"Male",
     district:"AUCA",
     church:"AUCA",
@@ -34,7 +34,7 @@ const membersDummyData=[
 },
 {
     fullNames:"Cyiza Samson",
-    mobile:"07800000004",
+    mobile:"0780000004",
     gender:"Male",
     district:"Remera",
     church:"Bibare",
@@ -42,7 +42,7 @@ const membersDummyData=[
 },
 {
     fullNames:"Shami Elba",
-    mobile:"07800000095",
+    mobile:"0780000095",
     gender:"Male",
     district:"Remera",
     church:"Nyabisindu",
@@ -50,7 +50,7 @@ const membersDummyData=[
 },
 {
     fullNames:"Ishimwe Vicky",
-    mobile:"07800000005",
+    mobile:"0780000005",
     gender:"Female",
     district:"Rusororo",
     church:"Masaka",
@@ -58,7 +58,7 @@ const membersDummyData=[
 },
 {
     fullNames:"Emime Ntanganda",
-    mobile:"07800008005",
+    mobile:"0780000800",
     gender:"Male",
     district:"Cyirabo",
     church:"Rukoro",
@@ -66,11 +66,19 @@ const membersDummyData=[
 },
 {
     fullNames:"Alice Ingabire",
-    mobile:"07800000205",
+    mobile:"0780000020",
     gender:"Female",
     district:"Mayange",
     church:"Rukoro",
     ID:"1200370000005375",
+},
+{
+    fullNames:"Aline Uwamahoro",
+    mobile:"0780000020",
+    gender:"Female",
+    district:"Mayange",
+    church:"Rukoro",
+    ID:"1194570000005375",
 }
 ]
 

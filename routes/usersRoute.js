@@ -43,7 +43,7 @@ traineeRoutes.patch("/:id",authMiddleware,updatedTrainee)
 traineeRoutes.patch("/block-Trainee/:id", authMiddleware, isAdmin, disableTrainee);
 traineeRoutes.patch("/unblock-Trainee/:id", authMiddleware, isAdmin, unblockTrainee);
 traineeRoutes.patch("/enroll/:course", authMiddleware, enrollToCourse);
-traineeRoutes.patch("/complete/:lesson", authMiddleware, completeLesson);
+traineeRoutes.patch("/complete/lesson/:lesson", authMiddleware, completeLesson);
 traineeRoutes.get("/my/courses", authMiddleware, getMyEnrolledCourses);
 traineeRoutes.get("/my/profile",authMiddleware,viewProfile);
 traineeRoutes.get("/top/Trainee",filterTraineeByScore);

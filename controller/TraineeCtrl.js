@@ -397,7 +397,7 @@ const completeLesson=asyncHandler(async(req,res)=>{
   const findLesson= await lessonModel.findOne({_id:lesson});
 
   if (!findLesson) throw new Error("This lesson is no longer available"); 
-
+  
   try {
     const data =findLesson?.completedBy
         

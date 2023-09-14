@@ -20,8 +20,12 @@ var quizzSchema = new mongoose.Schema(
     },
     completedBy: [{
       member:{type: mongoose.Schema.Types.ObjectId, ref: "Trainees"},
-      score:{type:String}
-    },{ _id : false }],
+      score:{type:String},
+      at:{type:String}
+      
+    },{ _id : false },{
+      timestamps: true,
+    }],
 
   },
   {
