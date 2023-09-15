@@ -79,7 +79,34 @@ const membersDummyData=[
     district:"Mayange",
     church:"Rukoro",
     ID:"1194570000005375",
+},
+{
+    fullNames:"Mbabazi Mariyana",
+    mobile:"0780000020",
+    gender:"Female",
+    district:"Mayange",
+    church:"Rukoro",
+    ID:"1196970000025375",
+},
+{
+    fullNames:"Irakoze Divine",
+    mobile:"0780000020",
+    gender:"Female",
+    district:"Mayange",
+    church:"Rukoro",
+    ID:"1199870000015375",
+},
+{
+    fullNames:"Bampire Marie Aime",
+    mobile:"0780000020",
+    gender:"Female",
+    district:"Mayange",
+    church:"Rukoro",
+    ID:"1198670000015375",
 }
+
+
+
 ]
 
 const seedUser=async()=>{

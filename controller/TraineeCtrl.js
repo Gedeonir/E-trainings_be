@@ -32,15 +32,19 @@ function getAge(IDNumber){
 }
 
 
-const isElegibleForGettingMarried=(ID)=>{
+const isElegibleForGettingMarried=(ID,yearOfMarriage)=>{
   const getDOB=ID.split('').slice(1,5).join('');
   
   if(new Date().getFullYear() - parseInt(getDOB) < 21){
     return false
-  }else
+  }else if(parseInt(yearOfMarriage) - parseInt(getDOB) < 21)
+    return false
+  else
     return true    
     
 }
+
+
 
 function isFemale(IDNumber){
   const getGender=IDNumber.split('').slice(5)[0];
@@ -69,7 +73,7 @@ const createTrainee = asyncHandler(async (req, res) => {
 
   if(!isFemale(ID)) throw new Error("Trainings are only available for female members of the SDA church")
 
-  if(isMarried && !isElegibleForGettingMarried(ID)) throw new Error("You must be above 21 to get married")
+  if(isMarried && !isElegibleForGettingMarried(ID,yearOfMarriage)) throw new Error("You must be above 21 to get married")
   
   if(isMarried && !yearOfMarriage) throw new Error("Please specify year of Marriage");
 
@@ -141,7 +145,7 @@ const loginTraineeCtrl = asyncHandler(async (req, res) => {
       token: generateToken(findTrainee?._id),
     });
   } else {
-    throw new Error("Mobile or password don't match");
+    throw new Error("ID or password don't match");
   }
 });
 

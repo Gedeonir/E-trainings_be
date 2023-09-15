@@ -169,7 +169,7 @@ const markTheQuizz=asyncHandler(async(req,res)=>{
         findQuizz?.completedBy.push({
             member:_id,
             score:marks,
-            at:new Date.now()
+            at:new Date()
         });
       
           
