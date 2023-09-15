@@ -69,6 +69,7 @@ const getOneCourse=asyncHandler(async(req,res)=>{
     try {
         const getCourse= await Courses.findOne({_id:id}).populate("courseCategory").populate("courseTutors")
         .populate({path:"enrolledTrainees",populate:"member"})
+        if(!getCourse) throw new Error("Course not found")
         res.json({
             getCourse
         })
@@ -77,14 +78,14 @@ const getOneCourse=asyncHandler(async(req,res)=>{
     }
 })
 
-const deleteLesson=asyncHandler(async(req,res)=>{
+const deleteCourse=asyncHandler(async(req,res)=>{
     const {id}=req.params;
     validateMongoDbId(id);
 
     try {
-        await Lesson.findByIdAndDelete(id)
+        await Courses.findByIdAndDelete(id)
         res.json({
-            message:"Lesson deleted succesfully"
+            message:"Course deleted succesfully"
         })
     } catch (error) {
         throw new Error(error)
@@ -147,6 +148,7 @@ module.exports={
     getAllCourses,
     addNewCourse,
     getOneCourse,
-    filterByPopularity
+    filterByPopularity,
+    deleteCourse
     
 }

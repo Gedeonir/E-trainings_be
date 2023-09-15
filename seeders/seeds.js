@@ -8,6 +8,8 @@ const memberModel = require("../models/memberModel");
 dotenv.config();
 
 const membersDummyData=[
+
+//Already registered
 {
     fullNames:"Ishimwe Fillette Honorine",
     mobile:"0780000001",
@@ -24,6 +26,48 @@ const membersDummyData=[
     church:"Remera",
     ID:"1198870000000002",
 },
+{
+    fullNames:"Alice Ingabire",
+    mobile:"0780070020",
+    gender:"Female",
+    district:"Mayange",
+    church:"Rukoro",
+    ID:"1200370000005375",
+},
+{
+    fullNames:"Aline Uwamahoro",
+    mobile:"0784000020",
+    gender:"Female",
+    district:"Mayange",
+    church:"Rukoro",
+    ID:"1194570000005375",
+},
+{
+    fullNames:"Mbabazi Mariyana",
+    mobile:"0780030020",
+    gender:"Female",
+    district:"Mayange",
+    church:"Rukoro",
+    ID:"1196970000025375",
+},
+{
+    fullNames:"Irakoze Divine",
+    mobile:"0780000220",
+    gender:"Female",
+    district:"Mayange",
+    church:"Rukoro",
+    ID:"1199870000015375",
+},
+{
+    fullNames:"Ishimwe Vicky",
+    mobile:"0780000005",
+    gender:"Female",
+    district:"Rusororo",
+    church:"Masaka",
+    ID:"1199670000000015",
+},
+
+//Male members data
 {
     fullNames:"Ishimwe Claude",
     mobile:"0780000003",
@@ -48,14 +92,7 @@ const membersDummyData=[
     church:"Nyabisindu",
     ID:"1200580000000005",
 },
-{
-    fullNames:"Ishimwe Vicky",
-    mobile:"0780000005",
-    gender:"Female",
-    district:"Rusororo",
-    church:"Masaka",
-    ID:"1199670000000015",
-},
+
 {
     fullNames:"Emime Ntanganda",
     mobile:"0780000800",
@@ -64,45 +101,49 @@ const membersDummyData=[
     church:"Rukoro",
     ID:"1199680000005315",
 },
-{
-    fullNames:"Alice Ingabire",
-    mobile:"0780000020",
-    gender:"Female",
-    district:"Mayange",
-    church:"Rukoro",
-    ID:"1200370000005375",
-},
-{
-    fullNames:"Aline Uwamahoro",
-    mobile:"0780000020",
-    gender:"Female",
-    district:"Mayange",
-    church:"Rukoro",
-    ID:"1194570000005375",
-},
-{
-    fullNames:"Mbabazi Mariyana",
-    mobile:"0780000020",
-    gender:"Female",
-    district:"Mayange",
-    church:"Rukoro",
-    ID:"1196970000025375",
-},
-{
-    fullNames:"Irakoze Divine",
-    mobile:"0780000020",
-    gender:"Female",
-    district:"Mayange",
-    church:"Rukoro",
-    ID:"1199870000015375",
-},
+
+
+
+//Not Registered 
 {
     fullNames:"Bampire Marie Aime",
     mobile:"0780000020",
     gender:"Female",
     district:"Mayange",
     church:"Rukoro",
+    ID:"1198670000215375",
+},
+{
+    fullNames:"Uwera Anna",
+    mobile:"0780900020",
+    gender:"Female",
+    district:"Mayange",
+    church:"Rukoro",
     ID:"1198670000015375",
+},
+{
+    fullNames:"Gikundiro Rehema",
+    mobile:"0780078020",
+    gender:"Female",
+    district:"Mayange",
+    church:"Rukoro",
+    ID:"1196670000035375",
+},
+{
+    fullNames:"Gisubizo Blessing",
+    mobile:"0780089020",
+    gender:"Female",
+    district:"Mayange",
+    church:"Rukoro",
+    ID:"11200570000015375",
+},
+{
+    fullNames:"Mukama Gloria",
+    mobile:"0781089020",
+    gender:"Female",
+    district:"Mayange",
+    church:"Rukoro",
+    ID:"11199070000015375",
 }
 
 

@@ -2,13 +2,14 @@ const express = require("express");
 
 const { authMiddleware, isAdmin, authMiddlewareAdmin } = require("../middlewares/authMiddleware");
 const { addLesson, getCourseAllLessons, getOneLesson, updateLesson, deleteLesson } = require("../controller/LessonCtrl");
-const { getAllCourses, addNewCourse,getOneCourse, filterByPopularity } = require("../controller/CourseCtrl");
+const { getAllCourses, addNewCourse,getOneCourse, filterByPopularity, deleteCourse } = require("../controller/CourseCtrl");
 const {addQuizz,getCourseQuizzes, addQuizzQuestions, getQuizzQuestion, markTheQuizz, getOneQuiz}=require("../controller/QuizzesCtrl")
 const router = express.Router();
 
 router.get("/all-courses",getAllCourses);
 router.post("/addNewCourse",authMiddlewareAdmin,addNewCourse)
 router.get("/:id",getOneCourse);
+router.delete("/:id",authMiddlewareAdmin,deleteCourse);
 router.post("/:course/addLesson",authMiddlewareAdmin,addLesson);
 router.get("/:course/lessons",getCourseAllLessons);
 router.get("/:course/lessons/:id",getOneLesson);
